@@ -1,0 +1,17 @@
+1- struct that holds realtime tasks.
+	T, state, .....
+
+2- function to add a new task
+	(func_ptr, T, arg) ---> create object and add to list
+
+3- write kernel/scheduler initializer
+	sorted list of tasks
+	start timer
+	bepar task aval
+
+3- write interrupt handler
+	save contex to corresponding folan
+	check if new task need to be added
+	find whose turn is it
+	
+	

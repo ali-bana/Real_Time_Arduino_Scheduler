@@ -68,13 +68,11 @@ void setup(void)
     current_task_ctx = &tasks[0];
 
 
-    avr_getcontext(&tasks[0]);
     avr_makecontext(&tasks[0],
                     (void*)&disabler_stack[0], sizeof(disabler_stack),
                     &dummy_ctx,
                     disabler_task1, NULL);
                     
-    avr_getcontext(&tasks[1]);
     avr_makecontext(&tasks[1],
                     (void*)&disabler_stack[0], sizeof(disabler_stack),
                     &dummy_ctx,
