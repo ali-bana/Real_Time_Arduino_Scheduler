@@ -16,6 +16,7 @@ static uint8_t disabler_stack[128]; // stack for the disabler_task
 
 static void disabler_task1(void *)
 {
+
   int a = 0;
     for (;;)
     {
@@ -58,16 +59,21 @@ void setup(void)
     pinMode(LED_BUILTIN, OUTPUT);
     digitalWrite(LED_BUILTIN, LOW);
     Serial.begin(19200);
-    Serial.println("ghiiirrrr");
+    Serial.println("ghiiirrrr\n\n\n");
 
   
-     avr_getcontext(&dummy_ctx);
+     
 
     
     current_task_num = 0;
     current_task_ctx = &tasks[0];
-
-
+    
+    start_system_timer();
+    Serial.println("kiiiiirrrrrr");
+    Serial.println(WDTCSR);
+    avr_getcontext(&dummy_ctx);
+    avr_getcontext(&tasks[0]);
+    avr_getcontext(&tasks[1]);
     avr_makecontext(&tasks[0],
                     (void*)&disabler_stack[0], sizeof(disabler_stack),
                     &dummy_ctx,
@@ -78,9 +84,11 @@ void setup(void)
                     &dummy_ctx,
                     disabler_task2, NULL);
                     
-    start_system_timer();
-    disabler_task1((void*)&disabler_stack[0]);
-   //avr_setcontext(&tasks[0]);
+    //start_system_timer();
+    //////////////////////////////////////////////////////////////////
+    //isabler_task1((void*)&disabler_stack[0]); // If I comment this line and uncomment the following line the WDT will reset the whole cpu after second task. But I think it should not.
+   avr_setcontext(current_task_ctx); //this line must act like the above line
+   //////////////////////////////////////////////////////////////////
     
    
 }
