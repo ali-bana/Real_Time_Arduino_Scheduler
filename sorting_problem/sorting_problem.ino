@@ -13,9 +13,8 @@ typedef  struct{
   unsigned int T; //period of task. if T==-1 task is aperiodic.
   state stat;
   void (*funcp)(void *); //pointer to the process function.
-  avr_context_t volatile *cntx; //context of the task
   void* stack;
-
+  avr_context_t volatile *cntx; //context of the task
 
 }task;
 
@@ -26,7 +25,7 @@ avr_context_t *volatile current_cntx;
 static int taskNum = 0; //total number of tasks
 static int current_task = -1; // index of current task
 static avr_context_t scheduler_cntx;
-static uint8_t scheduler_stack[512];// scheduler stack
+static uint8_t scheduler_stack[1024];// scheduler stack
 static avr_context_t waiting_cntx;
 static uint8_t waiting_stack[64];
 ///////////////////////////
@@ -42,7 +41,7 @@ void addTask(void (*funcp)(void *), int T) //add a new task to the array
   (*tasks[taskNum]).funcp = funcp;
   (*tasks[taskNum]).stat = FINISHED;
   (*tasks[taskNum]).instance_num = 0;
-  (*tasks[taskNum]).stack = malloc(10*sizeof(int));
+  (*tasks[taskNum]).stack = malloc(5*sizeof(int));
   taskNum++;
   // TODO
 }
@@ -92,10 +91,9 @@ static void scheduler()
 {
 //    Serial.println('a');
 
-  Serial.println(6);
+//  Serial.println(6);
   for(int i=0; i<taskNum; i++)
     {
-      
       
       if (millis() >= (unsigned long)(*tasks[i]).T * (*tasks[i]).instance_num)
         {
@@ -105,10 +103,9 @@ static void scheduler()
                     (void*)(*tasks[i]).stack, sizeof((*tasks[i]).stack),
                     &scheduler_cntx,
                     (*tasks[i]).funcp, NULL);
-            (*tasks[i]).instance_num++;
+            (*tasks[i]).instance_num = (*tasks[i]).instance_num + 1;
             (*tasks[i]).stat = PROGRESS;
         }
-        Serial.println((*tasks[i]).instance_num);
     }
   //select an unfinished task to continue
   for(int i=0; i<taskNum; i++)
@@ -131,7 +128,8 @@ void busy_waiting()
 
   while(1)
   {
-    delay(10);
+    Serial.println(1);
+    delay(1000);
    }
 }
 
@@ -153,52 +151,52 @@ void start_system_timer(void)
 void task1()
 {
   Serial.println("begin task1");
-//  char temp = 0;
-//  for(int i=0; i < 30000; i++) {temp++; temp = temp%100; }
-//  for(int i=0; i < 30000; i++) {temp++; temp = temp%100; }
-//  for(int i=0; i < 11000; i++) { temp++; temp = temp%100; }
-//  Serial.print(temp);
+  char temp = 0;
+  for(int i=0; i < 30000; i++) {temp++; temp = temp%100; }
+  for(int i=0; i < 30000; i++) {temp++; temp = temp%100; }
+  for(int i=0; i < 11000; i++) { temp++; temp = temp%100; }
+  Serial.print(temp);
   Serial.print(" end of task1: ");
   Serial.println(millis());
 }
 
-//void task2()
-//{
-//  Serial.println("begin task2");
-//  char temp = 0;
-//  for(int i=0; i < 30000; i++) {temp++; temp = temp%100; }
-//  for(int i=0; i < 30000; i++) {temp++; temp = temp%100; }
-//  for(int i=0; i < 11000; i++) { temp++; temp = temp%100; }
-//  
-//  for(int i=0; i < 30000; i++) {temp++; temp = temp%100; }
-//  for(int i=0; i < 30000; i++) {temp++; temp = temp%100; }
-//  for(int i=0; i < 11000; i++) { temp++; temp = temp%100; }
-//  
-//  Serial.print(temp);
-//  Serial.print(" end of task2: ");
-//  Serial.println(millis());
-//}
-//
-//
-//void task3()
-//{
-//  Serial.println("begin task3");
-//  char temp = 0;
-//  for(int i=0; i < 30000; i++) {temp++; temp = temp%100; }
-//  for(int i=0; i < 30000; i++) {temp++; temp = temp%100; }
-//  for(int i=0; i < 11000; i++) { temp++; temp = temp%100; }
-//
-//  for(int i=0; i < 30000; i++) {temp++; temp = temp%100; }
-//  for(int i=0; i < 30000; i++) {temp++; temp = temp%100; }
-//  for(int i=0; i < 11000; i++) { temp++; temp = temp%100; }
-//
-//  for(int i=0; i < 30000; i++) {temp++; temp = temp%100; }
-//  for(int i=0; i < 30000; i++) {temp++; temp = temp%100; }
-//  for(int i=0; i < 11000; i++) { temp++; temp = temp%100; }
-//  Serial.print(temp);
-//  Serial.print(" end of task3: ");
-//  Serial.println(millis());
-//}
+void task2()
+{
+  Serial.println("begin task2");
+  char temp = 0;
+  for(int i=0; i < 30000; i++) {temp++; temp = temp%100; }
+  for(int i=0; i < 30000; i++) {temp++; temp = temp%100; }
+  for(int i=0; i < 11000; i++) { temp++; temp = temp%100; }
+  
+  for(int i=0; i < 30000; i++) {temp++; temp = temp%100; }
+  for(int i=0; i < 30000; i++) {temp++; temp = temp%100; }
+  for(int i=0; i < 11000; i++) { temp++; temp = temp%100; }
+  
+  Serial.print(temp);
+  Serial.print(" end of task2: ");
+  Serial.println(millis());
+}
+
+
+void task3()
+{
+  Serial.println("begin task3");
+  char temp = 0;
+  for(int i=0; i < 30000; i++) {temp++; temp = temp%100; }
+  for(int i=0; i < 30000; i++) {temp++; temp = temp%100; }
+  for(int i=0; i < 11000; i++) { temp++; temp = temp%100; }
+
+  for(int i=0; i < 30000; i++) {temp++; temp = temp%100; }
+  for(int i=0; i < 30000; i++) {temp++; temp = temp%100; }
+  for(int i=0; i < 11000; i++) { temp++; temp = temp%100; }
+
+  for(int i=0; i < 30000; i++) {temp++; temp = temp%100; }
+  for(int i=0; i < 30000; i++) {temp++; temp = temp%100; }
+  for(int i=0; i < 11000; i++) { temp++; temp = temp%100; }
+  Serial.print(temp);
+  Serial.print(" end of task3: ");
+  Serial.println(millis());
+}
 
 
 
@@ -223,17 +221,16 @@ void setup() {
                     busy_waiting, NULL);
   // add yer tasks here
   addTask(task1, 4000);
-//  addTask(task2, 5000);
-//  addTask(task3, 6000);
+  addTask(task2, 5000);
+  addTask(task3, 6000);
 
   // sorting the tasks by their periods.
   
 //  sortTasks();
-  for(int i=0; i<2; i++)
+  for(int i=0; i<3; i++)
     Serial.println((*tasks[i]).T);
   start_system_timer();
   current_cntx = &waiting_cntx;
-  current_task = -1;
   avr_setcontext(&scheduler_cntx);
 //  busy_waiting();
 }
